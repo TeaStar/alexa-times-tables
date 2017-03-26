@@ -1,0 +1,19 @@
+{
+  "name": "times_tables",
+  "version": "1.0.0",
+  "description": "Reads out times tables sets, choose from 2 - 12 times tables",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "times tables",
+    "maths",
+    "multiplication"
+  ],
+  "author": "Dan Hunter - DreamPixel Limted",
+  "license": "ISC",
+  "dependencies": {
+    "alexa-sdk": "^1.0.7"
+  }
+}
