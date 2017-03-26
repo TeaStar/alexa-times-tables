@@ -1,7 +1,7 @@
 {
   "intents": [
     {
-      "intent": "GetNewFactIntent"
+      "intent": "ReadTimesTablesIntent"
     },
     {
       "intent": "AMAZON.HelpIntent"
