@@ -1,7 +1,7 @@
 {
   "intents": [
     {
-      "intent": "ReadTimesTablesIntent"
+      "intent": "TimesTablesIntent"
     },
     {
       "intent": "AMAZON.HelpIntent"

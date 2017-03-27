@@ -1,14 +1,16 @@
 
+'use strict';
 
 var Alexa = require("alexa-sdk");
 var APP_ID = undefined;  // TODO replace with your app ID (OPTIONAL).
 
+var timesTablesLangStrings;
 
 exports.handler = function(event, context, callback) {
     var alexa = Alexa.handler(event, context);
     alexa.APP_ID = APP_ID;
     // To enable string internationalization (i18n) features, set a resources object.
-    alexa.resources = timesTables;
+    alexa.resources = timesTablesLangStrings;
     alexa.registerHandlers(handlers);
     alexa.execute();
 };
