@@ -1,6 +1,4 @@
 
-var delay = "1s";
-
 var timesTablesLangStrings =
 {
   "en": {
