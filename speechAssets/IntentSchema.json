@@ -1,16 +1,8 @@
 {
   "intents": [
-    {
-      "intent": "TimesTablesIntent"
-    },
-    {
-      "intent": "AMAZON.HelpIntent"
-    },
-    {
-      "intent": "AMAZON.StopIntent"
-    },
-    {
-      "intent": "AMAZON.CancelIntent"
-    }
+    {"intent": "TimesTablesIntent", "slots": [{"name": "number", "type": "AMAZON.NUMBER"}]},
+    {"intent": "AMAZON.HelpIntent"},
+    {"intent": "AMAZON.StopIntent"},
+    {"intent": "AMAZON.CancelIntent"}
   ]
 }

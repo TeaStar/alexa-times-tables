@@ -1,12 +1,6 @@
-TimesTablesIntent times table
-TimesTablesIntent times tables
-TimesTablesIntent multiplication table
-TimesTablesIntent multiplication tables
-TimesTablesIntent read times table
-TimesTablesIntent read times tables
-TimesTablesIntent read multiplication table
-TimesTablesIntent read multiplication tables
-TimesTablesIntent say times table
-TimesTablesIntent say times tables
-TimesTablesIntent say multiplication table
-TimesTablesIntent say multiplication tables
+TimesTablesIntent {number} times table
+TimesTablesIntent {number} times tables
+TimesTablesIntent read {number} times table
+TimesTablesIntent read {number} times tables
+TimesTablesIntent say {number} times table
+TimesTablesIntent say {number} times tables
