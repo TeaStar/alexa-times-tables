@@ -7,7 +7,7 @@ var APP_ID = undefined;  // TODO replace with your app ID (OPTIONAL).
 var ttModule = require('./data/timesTablesLangStrings.js');
 var ttLangStrings = ttModule.timesTablesLangStrings;
 
-var delay = "1s";
+var delay = "0.3s";
 
 exports.handler = function(event, context, callback) {
     var alexa = Alexa.handler(event, context);
@@ -28,16 +28,22 @@ var handlers = {
   'GetTimesTable': function () {
       var timesTableNumber = parseInt(this.event.request.intent.slots.number.value);
       console.log('Times tables selected: ' + timesTableNumber);
+      var timesTableResult = "";
 
-      for (var i = 0; i <= 12; i++) {
+      var i = 0;
+      while (i < 13) {
         var result = i * timesTableNumber;
-        this.emit(':tell', i + " times " + timesTableNumber + " equals <break time=\"${delay}\" />" + result);
+        var resultString = i + " times " + timesTableNumber + " equals <break time='" + delay + "' /> " + result;
+
+        if (i < 12) {
+          timesTableResult = timesTableResult.concat(resultString + ", <break time='" + delay + "' />");
+        } else {
+          timesTableResult = timesTableResult.concat(resultString);
+        }
+        i++;
       }
 
-      // var ttArray = this.t('TIMES_TABLES');
-      // var timesTable = ttArray.timesTableNumber;
-      // var speechOutput = this.t("TIMES_TABLES_MESSAGE") + timesTable;
-      // this.emit(':tellWithCard', speechOutput, this.t("SKILL_NAME"), timesTable)
+      this.emit(':tell', timesTableResult);
   },
   'AMAZON.HelpIntent': function () {
       var speechOutput = this.t("HELP_MESSAGE");
