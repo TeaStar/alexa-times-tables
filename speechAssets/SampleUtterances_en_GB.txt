@@ -1,6 +1,13 @@
+TimesTablesIntent {number}
+TimesTablesIntent {number}
 TimesTablesIntent {number} times table
 TimesTablesIntent {number} times tables
 TimesTablesIntent read {number} times table
 TimesTablesIntent read {number} times tables
 TimesTablesIntent say {number} times table
 TimesTablesIntent say {number} times tables
+
+DetermineIntent {number}
+DetermineIntent {number}
+DetermineIntent {number} times table
+DetermineIntent {number} times tables
