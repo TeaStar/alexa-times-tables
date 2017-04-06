@@ -1,3 +1,9 @@
+WelcomeIntent {option}
+WelcomeIntent {option} times table
+WelcomeIntent {option} times tables
+WelcomeIntent {option} me on times table
+WelcomeIntent {option} me on times tables
+
 TimesTablesIntent {number}
 TimesTablesIntent {number}
 TimesTablesIntent {number} times table
