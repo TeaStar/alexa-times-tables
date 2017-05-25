@@ -13,6 +13,5 @@ TimesTablesIntent say {number} times table
 TimesTablesIntent say {number} times tables
 
 DetermineIntent {number}
-DetermineIntent {number}
 DetermineIntent {number} times table
 DetermineIntent {number} times tables
