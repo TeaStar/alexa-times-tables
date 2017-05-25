@@ -5,7 +5,6 @@ WelcomeIntent {option} me on times table
 WelcomeIntent {option} me on times tables
 
 TimesTablesIntent {number}
-TimesTablesIntent {number}
 TimesTablesIntent {number} times table
 TimesTablesIntent {number} times tables
 TimesTablesIntent read {number} times table

@@ -26,8 +26,14 @@ exports.handler = function(event, context, callback) {
     // To enable string internationalization (i18n) features, set a resources object.
     alexa.resources = ttLangStrings;
 
-    alexa.registerHandlers(launchHandler, welcomeHandler, readTimesTablesHandler, startTestHandlers,
-      determineTestHandlers, answerModeHandlers, answerAttemptHandlers);
+    alexa.registerHandlers(
+      launchHandler,
+      welcomeHandler,
+      readTimesTablesHandler);
+      // startTestHandlers,
+      // determineTestHandlers,
+      // answerModeHandlers,
+      // answerAttemptHandlers);
 
     alexa.execute();
 };
@@ -42,10 +48,10 @@ exports.handler = function(event, context, callback) {
 var launchHandler = {
   'NewSession': function () {
       this.handler.state = states.STARTMODE;
-      this.emit(':ask', this.t(WELCOME_MSG), this.t(WELCOME_MSG));
+      this.emit(':ask', this.t("WELCOME_MSG"), this.t("WELCOME_MSG"));
   },
   'AMAZON.HelpIntent': function () {
-      this.emit(':ask', this.t(WELCOME_MSG), this.t(WELCOME_MSG));
+      this.emit(':ask', this.t("WELCOME_MSG"), this.t("WELCOME_MSG"));
   },
   'AMAZON.CancelIntent': function () {
       this.emit(':tell', this.t("STOP_MESSAGE"));
@@ -55,7 +61,7 @@ var launchHandler = {
   },
   'Unhandled': function() {
       console.log("launchHandler UNHANDLED");
-      this.emit(':ask', this.t(WELCOME_MSG), this.t(WELCOME_MSG));
+      this.emit(':ask', this.t("WELCOME_MSG"), this.t("WELCOME_MSG"));
   }
 };
 
@@ -65,11 +71,20 @@ var welcomeHandler = Alexa.CreateStateHandler(states.STARTMODE, {
     console.log("Welcome answer: " + welcomeAnswer);
 
     if (welcomeAnswer === 'read') {
+      console.log("Setting read mode");
       this.handler.state = states.READMODE;
-      this.emit('TimesTablesIntent');
+      // this.emit('TimesTablesIntent');
+      this.emit(':ask', this.t("HELP_MESSAGE"), this.t("HELP_MESSAGE"));
+
     } else if (welcomeAnswer === 'test') {
+      console.log("Setting test mode");
       this.handler.state = states.TESTMODE;
       this.emit('TestSession');
+
+    } else {
+      console.log("UH!");
+      var message = 'Just say \'read\' or \'test\'';
+      this.emit(':ask', 'Sorry I didnt understand that. ' + message, message);
     }
   },
   'AMAZON.HelpIntent': function () {
@@ -90,6 +105,7 @@ var welcomeHandler = Alexa.CreateStateHandler(states.STARTMODE, {
 
 var readTimesTablesHandler = Alexa.CreateStateHandler(states.READMODE, {
   'TimesTablesIntent': function () {
+      console.log('TimesTablesIntent');
       this.emit('GetTimesTable');
   },
   /** Read out User choosen times tables **/
@@ -142,6 +158,7 @@ var readTimesTablesHandler = Alexa.CreateStateHandler(states.READMODE, {
   * Proceeding with option 2 until more feedback recieved.
   **/
 
+  //COMMENTED OUT!
   // var newTestSessionHandlers = Alexa.CreateStateHandler(states.STARTMODE, {
   //   'TestSession': function() {
   //     this.handler.state = states.TESTMODE;
@@ -164,154 +181,155 @@ var readTimesTablesHandler = Alexa.CreateStateHandler(states.READMODE, {
   //       this.emit(':ask', message, message);
   //   }
   // });
+  // END
 
-  var startTestHandlers = Alexa.CreateStateHandler(states.TESTMODE, {
-    'TestSession': function () {
-        this.emit('TestSession'); // Uses the handler in TestSessionHandlers
-    },
-    'AMAZON.HelpIntent': function() {
-        var message = 'I will read out a times tables questions, Do you want to start the test?';
-        this.emit(':ask', message, message);
-    },
-    'AMAZON.YesIntent': function() {
-        this.handler.state = states.DETERMINEMODE; // determine which times tables to be tested on
-        this.emit(':ask', 'Great! What times tables between 2 and 12 would you like to be tested on?.',
-                          'Say a number between 2 and 12.');
-    },
-    'AMAZON.NoIntent': function() {
-        console.log("NOINTENT");
-        this.emit(':tell', this.t("NEXT_TIME"));
-    },
-    "AMAZON.StopIntent": function() {
-      console.log("STOPINTENT");
-      this.emit(':tell', this.t("STOP_MESSAGE"));
-    },
-    "AMAZON.CancelIntent": function() {
-      console.log("CANCELINTENT");
-      this.emit(':tell', this.t("STOP_MESSAGE"));
-    },
-    'SessionEndedRequest': function () {
-        console.log("SESSIONENDEDREQUEST");
-        //this.attributes['endedSessionCount'] += 1;
-        this.emit(':tell', this.t("STOP_MESSAGE"));
-    },
-    'Unhandled': function() {
-        console.log("startTestHandlers UNHANDLED");
-        var message = 'Say yes to continue, or no to end the test.';
-        this.emit(':ask', message, message);
-    }
-  });
-
-  var determineTestHandlers = Alexa.CreateStateHandler(states.DETERMINEMODE, {
-    'TestSession': function () {
-        this.emit('TestSession'); // Uses the handler in TestSessionHandlers
-    },
-    'DetermineIntent': function() {
-        var timesTableNumber = parseInt(this.event.request.intent.slots.number.value);
-        this.attributes["timesTableNumber"] = timesTableNumber;
-        this.attributes["currentNumber"] = TEST_STARTING_NUMBER;
-
-        this.handler.state = states.ANSWERMODE;
-        this.emit(':ask', "What is " +  TEST_STARTING_NUMBER + this.t("TIMES") + timesTableNumber + "?", "Say a number.");
-    },
-    'AMAZON.HelpIntent': function() {
-        this.emit(':ask', 'What times tables would you like to be tested on?.', 'Say a number between 2 and 12.');
-    },
-    "AMAZON.StopIntent": function() {
-      console.log("STOPINTENT");
-      this.emit(':tell', this.t("STOP_MESSAGE"));
-    },
-    "AMAZON.CancelIntent": function() {
-      console.log("CANCELINTENT");
-      this.emit(':tell', this.t("STOP_MESSAGE"));
-    },
-    'SessionEndedRequest': function () {
-        console.log("SESSIONENDEDREQUEST");
-        //this.attributes['endedSessionCount'] += 1;
-        this.emit(':tell', this.t("STOP_MESSAGE"));
-    },
-    'Unhandled': function() {
-        console.log("determineTestHandlers UNHANDLED");
-        var message = 'Say yes to continue, or no to end the test.';
-        this.emit(':ask', message, message);
-    }
-  });
-
-  var answerModeHandlers = Alexa.CreateStateHandler(states.ANSWERMODE, {
-    'TestSession': function () {
-        this.handler.state = '';
-        this.emitWithState('TestSession'); // Equivalent to the Start Mode TestSession handler
-    },
-    'AnswerIntent': function() {
-      var answer = parseInt(this.event.request.intent.slots.number.value);
-      var timesTableNumber = this.attributes["timesTableNumber"];
-      var currentNumber = this.attributes["currentNumber"];
-      console.log("question: " + currentNumber + " * " + timesTableNumber + ", answer given:" + answer);
-
-      if (isNan(answer)) {
-        console.log(answer + " is not a number!")
-        this.emit('NotANum');
-
-      } else if (currentNumber * timesTableNumber === answer) {
-        console.log("Answer correct!");
-
-        // With a callback, use the arrow function to preserve the correct 'this' context
-        this.emit('Correct', () => {
-            // ask next question or ask if they would like to continue?
-            // next question
-            currentNumber++;
-            if (currentNumber === 12) {
-              // end test
-            } else {
-              this.attributes["currentNumber"] = currentNumber;
-              this.emit(':ask', "OK, What is " +  currentNumber + this.t("TIMES") + timesTableNumber + "?", "Say a number.");
-            }
-            // ask to continue to next question
-            // this.emit(':ask', answer.toString() + 'is correct! Would you like the next question?',
-            // 'Say yes for your next question, or no to end the test.');
-          })
-      } else {
-        console.log("Incorrect answer " + answer);
-        this.emit('Incorrect');
-      }
-    },
-    'AMAZON.HelpIntent': function() {
-      var timesTableNumber = this.attributes["timesTableNumber"];
-      var currentNumber = this.attributes["currentNumber"];
-
-      this.handler.state = states.ANSWERMODE;
-      this.emit(':ask', "What is " +  currentNumber + this.t("TIMES") + timesTableNumber + "?", "Say a number.");
-    },
-    "AMAZON.StopIntent": function() {
-      console.log("STOPINTENT");
-      this.emit(':tell', this.t("STOP_MESSAGE"));
-    },
-    "AMAZON.CancelIntent": function() {
-      console.log("CANCELINTENT");
-      this.emit(':tell', this.t("STOP_MESSAGE"));
-    },
-    'SessionEndedRequest': function () {
-        console.log("SESSIONENDEDREQUEST");
-        //this.attributes['endedSessionCount'] += 1;
-        this.emit(':tell', this.t("STOP_MESSAGE"));
-    },
-    'Unhandled': function() {
-        console.log("answerModeHandlers UNHANDLED");
-        var message = 'Say yes to continue, or no to end the test.';
-        this.emit(':ask', message, message);
-    }
-  });
-
-  var answerAttemptHandlers = {
-    'Correct': function() {
-        this.handler.state = states.ANSWERMODE;
-        callback();
-    },
-    'Incorrect': function() {
-      this.emit(':ask', 'Sorry, that is incorrect. Try again by saying a number.', 'Try again by saying a number.');
-
-    },
-    'NotANum': function() {
-        this.emit(':ask', 'Sorry, I didn\'t get that. Try saying a number.', 'Try saying a number.');
-    }
-  };
+  // var startTestHandlers = Alexa.CreateStateHandler(states.TESTMODE, {
+  //   'TestSession': function () {
+  //       this.emit('TestSession'); // Uses the handler in TestSessionHandlers
+  //   },
+  //   'AMAZON.HelpIntent': function() {
+  //       var message = 'I will read out a times tables questions, Do you want to start the test?';
+  //       this.emit(':ask', message, message);
+  //   },
+  //   'AMAZON.YesIntent': function() {
+  //       this.handler.state = states.DETERMINEMODE; // determine which times tables to be tested on
+  //       this.emit(':ask', 'Great! What times tables between 2 and 12 would you like to be tested on?.',
+  //                         'Say a number between 2 and 12.');
+  //   },
+  //   'AMAZON.NoIntent': function() {
+  //       console.log("NOINTENT");
+  //       this.emit(':tell', this.t("NEXT_TIME"));
+  //   },
+  //   "AMAZON.StopIntent": function() {
+  //     console.log("STOPINTENT");
+  //     this.emit(':tell', this.t("STOP_MESSAGE"));
+  //   },
+  //   "AMAZON.CancelIntent": function() {
+  //     console.log("CANCELINTENT");
+  //     this.emit(':tell', this.t("STOP_MESSAGE"));
+  //   },
+  //   'SessionEndedRequest': function () {
+  //       console.log("SESSIONENDEDREQUEST");
+  //       //this.attributes['endedSessionCount'] += 1;
+  //       this.emit(':tell', this.t("STOP_MESSAGE"));
+  //   },
+  //   'Unhandled': function() {
+  //       console.log("startTestHandlers UNHANDLED");
+  //       var message = 'Say yes to continue, or no to end the test.';
+  //       this.emit(':ask', message, message);
+  //   }
+  // });
+  //
+  // var determineTestHandlers = Alexa.CreateStateHandler(states.DETERMINEMODE, {
+  //   'TestSession': function () {
+  //       this.emit('TestSession'); // Uses the handler in TestSessionHandlers
+  //   },
+  //   'DetermineIntent': function() {
+  //       var timesTableNumber = parseInt(this.event.request.intent.slots.number.value);
+  //       this.attributes["timesTableNumber"] = timesTableNumber;
+  //       this.attributes["currentNumber"] = TEST_STARTING_NUMBER;
+  //
+  //       this.handler.state = states.ANSWERMODE;
+  //       this.emit(':ask', "What is " +  TEST_STARTING_NUMBER + this.t("TIMES") + timesTableNumber + "?", "Say a number.");
+  //   },
+  //   'AMAZON.HelpIntent': function() {
+  //       this.emit(':ask', 'What times tables would you like to be tested on?.', 'Say a number between 2 and 12.');
+  //   },
+  //   "AMAZON.StopIntent": function() {
+  //     console.log("STOPINTENT");
+  //     this.emit(':tell', this.t("STOP_MESSAGE"));
+  //   },
+  //   "AMAZON.CancelIntent": function() {
+  //     console.log("CANCELINTENT");
+  //     this.emit(':tell', this.t("STOP_MESSAGE"));
+  //   },
+  //   'SessionEndedRequest': function () {
+  //       console.log("SESSIONENDEDREQUEST");
+  //       //this.attributes['endedSessionCount'] += 1;
+  //       this.emit(':tell', this.t("STOP_MESSAGE"));
+  //   },
+  //   'Unhandled': function() {
+  //       console.log("determineTestHandlers UNHANDLED");
+  //       var message = 'Say yes to continue, or no to end the test.';
+  //       this.emit(':ask', message, message);
+  //   }
+  // });
+  //
+  // var answerModeHandlers = Alexa.CreateStateHandler(states.ANSWERMODE, {
+  //   'TestSession': function () {
+  //       this.handler.state = '';
+  //       this.emitWithState('TestSession'); // Equivalent to the Start Mode TestSession handler
+  //   },
+  //   'AnswerIntent': function() {
+  //     var answer = parseInt(this.event.request.intent.slots.number.value);
+  //     var timesTableNumber = this.attributes["timesTableNumber"];
+  //     var currentNumber = this.attributes["currentNumber"];
+  //     console.log("question: " + currentNumber + " * " + timesTableNumber + ", answer given:" + answer);
+  //
+  //     if (isNan(answer)) {
+  //       console.log(answer + " is not a number!")
+  //       this.emit('NotANum');
+  //
+  //     } else if (currentNumber * timesTableNumber === answer) {
+  //       console.log("Answer correct!");
+  //
+  //       // With a callback, use the arrow function to preserve the correct 'this' context
+  //       this.emit('Correct', () => {
+  //           // ask next question or ask if they would like to continue?
+  //           // next question
+  //           currentNumber++;
+  //           if (currentNumber === 12) {
+  //             // end test
+  //           } else {
+  //             this.attributes["currentNumber"] = currentNumber;
+  //             this.emit(':ask', "OK, What is " +  currentNumber + this.t("TIMES") + timesTableNumber + "?", "Say a number.");
+  //           }
+  //           // ask to continue to next question
+  //           // this.emit(':ask', answer.toString() + 'is correct! Would you like the next question?',
+  //           // 'Say yes for your next question, or no to end the test.');
+  //         })
+  //     } else {
+  //       console.log("Incorrect answer " + answer);
+  //       this.emit('Incorrect');
+  //     }
+  //   },
+  //   'AMAZON.HelpIntent': function() {
+  //     var timesTableNumber = this.attributes["timesTableNumber"];
+  //     var currentNumber = this.attributes["currentNumber"];
+  //
+  //     this.handler.state = states.ANSWERMODE;
+  //     this.emit(':ask', "What is " +  currentNumber + this.t("TIMES") + timesTableNumber + "?", "Say a number.");
+  //   },
+  //   "AMAZON.StopIntent": function() {
+  //     console.log("STOPINTENT");
+  //     this.emit(':tell', this.t("STOP_MESSAGE"));
+  //   },
+  //   "AMAZON.CancelIntent": function() {
+  //     console.log("CANCELINTENT");
+  //     this.emit(':tell', this.t("STOP_MESSAGE"));
+  //   },
+  //   'SessionEndedRequest': function () {
+  //       console.log("SESSIONENDEDREQUEST");
+  //       //this.attributes['endedSessionCount'] += 1;
+  //       this.emit(':tell', this.t("STOP_MESSAGE"));
+  //   },
+  //   'Unhandled': function() {
+  //       console.log("answerModeHandlers UNHANDLED");
+  //       var message = 'Say yes to continue, or no to end the test.';
+  //       this.emit(':ask', message, message);
+  //   }
+  // });
+  //
+  // var answerAttemptHandlers = {
+  //   'Correct': function() {
+  //       this.handler.state = states.ANSWERMODE;
+  //       callback();
+  //   },
+  //   'Incorrect': function() {
+  //     this.emit(':ask', 'Sorry, that is incorrect. Try again by saying a number.', 'Try again by saying a number.');
+  //
+  //   },
+  //   'NotANum': function() {
+  //       this.emit(':ask', 'Sorry, I didn\'t get that. Try saying a number.', 'Try saying a number.');
+  //   }
+  // };
